@@ -20,15 +20,27 @@ def get_historical_results(url):
         draw_date = datetime.datetime.strptime(div.find('a')['href'][-10:],
                                                "%d-%m-%Y").date()
         lotto_numbers = []
-        for ball in div.find_all('li', {'class': 'ball'}):
+        euro_uls = div.select('ul')[0]  # [0] will exclude euro plus
+        for ball in euro_uls.find_all('li', {'class': 'ball'}):
             lotto_numbers.append(int(ball.get_text()))
 
         bonus_numbers = []
         for ball in div.find_all('li', {'class': 'lucky-star'}):
             bonus_numbers.append(int(ball.get_text()))
 
+        # Euro Plus 1st Draw:: 2007-06-15
+        plus_numbers = []
+        try:
+            plus_uls = div.select('ul')[1]  # [1] will get euro plus
+            for ball in plus_uls.find_all('li', {'class': 'ball'}):
+                plus_numbers.append(int(ball.get_text()))
+        except IndexError:
+            plus_uls = 'null'
+
         archive_results[draw_date] = {'lotto_nums': lotto_numbers,
-                                      'bonus_nums': bonus_numbers}
+                                      'bonus_nums': bonus_numbers,
+                                      'euro_plus': plus_numbers}
+
     return archive_results
 
 
