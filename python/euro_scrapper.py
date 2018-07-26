@@ -2,6 +2,7 @@ import collections
 import datetime
 import os
 from bs4 import BeautifulSoup
+import csv
 
 archive_results = dict()
 url_archive_page = "https://www.euro-millions.com/results-archive-"
@@ -53,6 +54,20 @@ def display_historical_results(dictionary):
         print("{} {}".format(dates, numbers))
 
 
+def write_to_csv(dictionary):
+    with open('results_historical.csv', 'wb') as csv_file:
+        writer = csv.writer(csv_file)
+        for key, value in dictionary.items():
+            writer.writerow([key, value])
+
+
+def read_csv():
+    with open('results_historical.csv', 'rb') as csv_file:
+        reader = csv.reader(csv_file)
+        csv_dict = dict(reader)
+        display_historical_results(order_dictionary(csv_dict))
+
+
 if __name__ == '__main__':
     start_time = datetime.datetime.now()
     for draw_year in get_years():
@@ -64,3 +79,4 @@ if __name__ == '__main__':
     print("Total Number of Draws:: {}".format(len(results_dict)))
     print("Total Time to retrieve the data:: {}".format(
         datetime.datetime.now() - start_time))
+    write_to_csv(results_dict)
